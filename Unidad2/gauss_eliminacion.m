@@ -1,4 +1,4 @@
-function x = gauss_eliminacion(a,b)
+function X = gauss_eliminacion(a,b)
   % FUNCION QUE IMPLEMENTA LAS ELIMINACIONES GAUSSIANAS 
     % USANDO EL ESQUEMA PIVOTEO PARCIAL Y ESCALAMIENTO
     %
@@ -45,7 +45,8 @@ function x = gauss_eliminacion(a,b)
       
     end  
     
-    % EN CASO DE QUE p NO COINCIDA CON LA k DE 
+    % EN CASO DE QUE p NO COINCIDA CON k 
+    % PERMUTE LAS FILAS
     if (p ~= k)
       
       A([p k],k:m) = A([k p],k:m);
@@ -53,7 +54,7 @@ function x = gauss_eliminacion(a,b)
       
     end  
    
-    % TRIANGULACION
+    % PROCESO DE TRIANGULACION
     
     for j = (k+1):n
     
@@ -83,6 +84,6 @@ function x = gauss_eliminacion(a,b)
     
   end
 
-  x = A(:,(n+1):m);
+  X = A(:,(n+1):m);
 
 end
