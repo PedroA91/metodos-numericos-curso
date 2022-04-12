@@ -2,4 +2,10 @@ clc
 clear all
 close all
 
-fprintf("Hola mundo\n")
+n = 256;
+a = rand(n,n);
+b = ones(n,1);
+
+tic
+x = gauss_eliminacion(a,b);
+toc
