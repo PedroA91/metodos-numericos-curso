@@ -32,3 +32,4 @@ Unidad 6.
 - Problemas de contorno.
 
 M. C. Pedro Antonio Peralta Regalado.
+pedrinto91@gmail.com
