@@ -10,7 +10,7 @@ Unidad 2.
 - PLU.
 - Determinantes.
 - Inversa.
-- Método de las inversas.
+- Método de las potencias.
 
 Unidad 3.
 - Bisección.
