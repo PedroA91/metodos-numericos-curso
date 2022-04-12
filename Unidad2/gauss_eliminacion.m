@@ -1,21 +1,24 @@
 function X = gauss_eliminacion(a,b)
-  % FUNCION QUE IMPLEMENTA LAS ELIMINACIONES GAUSSIANAS 
-    % USANDO EL ESQUEMA PIVOTEO PARCIAL Y ESCALAMIENTO
-    %
-    % Considere el sistema aX=b
-    % a: matriz de coeficientes
-    % b: matriz de estimulos 
+   % FUNCION QUE IMPLEMENTA LAS ELIMINACIONES GAUSSIANAS 
+   % USANDO EL ESQUEMA PIVOTEO PARCIAL Y ESCALAMIENTO
+   %
+   % Considere el sistema aX=b
+   % a: matriz de coeficientes
+   % b: matriz de estimulos 
  
   % COMPROBACION DE LAS DIMENSIONES
   [f_a,c_a] = size(a);
   [f_b,c_b] = size(b);
-
   if f_a ~= c_a
     
+    % ERROR DEBIDO A MAL TAMAÑO DE LA MATRIZ
+    % DE COEFICIENTES a
     error("LAS MATRICES NO SON CUADRADAS")
   
   elseif c_a ~= f_b
     
+    % ERROR DEBIDO A MAL TAMAÑO DE LA MATRIZ
+    % DE ESTIMULOS b
     error("LAS MATRICES NO TIENEN TAMAÑOS COMPATIBLES")
 
   else 
@@ -84,6 +87,7 @@ function X = gauss_eliminacion(a,b)
     
   end
 
+  % EXTRAYENDO LA SOLUCION
   X = A(:,(n+1):m);
 
 end
