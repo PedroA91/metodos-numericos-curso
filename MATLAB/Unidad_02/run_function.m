@@ -1,13 +1,30 @@
-#!/usr/bin/octave
+# Comparación inversa vs PLU
 clc
 clear all
 close all
 
-n = 256;
+% Datos
+n = 1024;
 a = rand(n,n);
-b = ones(n,1);
+b = eye(n);
 
-tic
-%x = gauss_eliminacion(a,b);
+% Computación PLU
+t_ini = time();
 A = PLU(a);
-toc
+X = solve_PLU(A,b);
+t_fin = time();
+tplu = t_fin-t_ini;
+fprintf("Tiempo de computación PLU %f \n",tplu)
+
+% Computación Gauss
+t_ini = time();
+x = gauss_eliminacion(a,b);
+t_fin = time();
+tgauss = t_fin-t_ini;
+fprintf("Tiempo de computación Gauss %f \n",tgauss)
+
+% Mensajes
+fprintf("%10s \n",'__')
+fprintf("| Metodo | Tiempo |\n")
+fprintf("| Gauss  |%8.4f|\n",tgauss)
+fprintf("| PLU    |%8.4f|\n",tplu)

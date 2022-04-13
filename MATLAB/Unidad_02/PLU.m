@@ -1,13 +1,16 @@
-function A = PLU(a)
-   % FUNCION QUE IMPLEMENTA LA FACTORIZACION PLU 
-   % USANDO EL ESQUEMA PIVOTEO PARCIAL Y ESCALAMIENTO
-   %
-   % Considere el sistema Pa = LU
-   % a: matriz a factorizar
- 
+function B = PLU(a)
+% FUNCION QUE IMPLEMENTA LA FACTORIZACION PLU
+% MEDIANTE LAS ELIMINACIONES GAUSSIANAS 
+% CON INTERCAMBIO DE FILAS SIGUIENDO 
+% EL ESQUEMA PIVOTEO PARCIAL Y ESCALAMIENTO
+%
+% Considere el sistema aX=b
+% a: matriz de coeficientes, matriz cuadrada invertible
+% esta matriz tiene una columna
+
   % COMPROBACION DE LAS DIMENSIONES
   [f_a,c_a] = size(a);
-
+  
   if f_a ~= c_a
     
     % ERROR DEBIDO A MAL TAMAÑO DE LA MATRIZ
@@ -17,21 +20,17 @@ function A = PLU(a)
   else 
 
     % NUMERO DE FILAS EN n
-    % NUMERO DE COLUMNAS EN m
     n = f_a;
-    m = n+1;
+  
     % CREAR MATRIZ AUMENTADA
-    A = [a (1:n).'];
+    A = [a (1:n).' max(abs(a(:,:)),[],2)];
 
-  end 
-
-  % MAXIMO POR FILAS
-  a_max = max(abs(A(:,:)),[],2);
+  end  
 
   for k = 1:(n-1)
     
     % CALCULO DEL MAXIMO Y SU POSICION
-    [v,p] = max(abs(A(k:n,k))./a_max(k:n,1));
+    [v,p] = max(abs(A(k:n,k))./A(k:n,n+2));
     p = p+k-1;
     
     if (v < eps)
@@ -44,8 +43,7 @@ function A = PLU(a)
     % PERMUTE LAS FILAS
     if (p ~= k)
       
-      A([p k],k:m) = A([k p],k:m);
-      a_max([p k],1) = a_max([k p],1);
+      A([p k],:) = A([k p],:);
       
     end  
    
@@ -56,13 +54,18 @@ function A = PLU(a)
       if A(j,k) ~= 0
         
        c = A(j,k)/A(k,k);
-       A(j,(k+1):n) = A(j,(k+1):n)-c*A(k,(k+1):n);
+       A(j,1:n) = A(j,1:n)-c*A(k,1:n);
        A(j,k) = c;
-
+       
       end 
     
     end  
     
   end
+  
+  B = A(:,1:(n+1));
 
 end
+
+% Pedro Antonio Peralta Regalado
+% pedrinto91@gmail.com

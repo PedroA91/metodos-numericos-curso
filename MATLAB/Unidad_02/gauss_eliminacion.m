@@ -1,14 +1,17 @@
 function X = gauss_eliminacion(a,b)
-   % FUNCION QUE IMPLEMENTA LAS ELIMINACIONES GAUSSIANAS 
-   % USANDO EL ESQUEMA PIVOTEO PARCIAL Y ESCALAMIENTO
-   %
-   % Considere el sistema aX=b
-   % a: matriz de coeficientes
-   % b: matriz de estimulos 
- 
+% FUNCION QUE IMPLEMENTA LAS ELIMINACIONES GAUSSIANAS 
+% CON INTERCAMBIO DE FILAS SIGUIENDO 
+% EL ESQUEMA PIVOTEO PARCIAL Y ESCALAMIENTO
+%
+% Considere el sistema aX=b
+% a: matriz de coeficientes, matriz cuadrada invertible
+% b: matriz de estimulos, por cada sistema de ecuaciones
+% esta matriz tiene una columna
+
   % COMPROBACION DE LAS DIMENSIONES
   [f_a,c_a] = size(a);
   [f_b,c_b] = size(b);
+  
   if f_a ~= c_a
     
     % ERROR DEBIDO A MAL TAMAÑO DE LA MATRIZ
@@ -25,16 +28,17 @@ function X = gauss_eliminacion(a,b)
 
    % CREAR MATRIZ AUMENTADA
     A = [a b];
+    
+    % NUMERO DE FILAS EN n
+    n = f_a;
+    
+    % NUMERO DE COLUMNAS EN m
+    m = n+c_b;
+    
+    % MAXIMO POR FILAS
+    a_max = max(abs(A(:,1:n)),[],2);
 
   end  
-
-  % NUMERO DE FILAS EN n
-  % NUMERO DE COLUMNAS EN m
-  n = f_a;
-  m = n+c_b;
-
-  % MAXIMO POR FILAS
-  a_max = max(abs(A(:,1:n)),[],2);
 
   for k = 1:(n-1)
     
@@ -80,14 +84,9 @@ function X = gauss_eliminacion(a,b)
     
   end  
 
-  % PROCESO DE SUSTITUCION HACIA ATRAS
-  for k = n:-1:1
-    
-    A(k,(n+1):m) = (A(k,(n+1):m)-A(k,(k+1):n)*A((k+1):n,(n+1):m))/A(k,k);
-    
-  end
-
-  % EXTRAYENDO LA SOLUCION
-  X = A(:,(n+1):m);
+  X = SustitucionAtras(A);
 
 end
+
+% Pedro Antonio Peralta Regalado
+% pedrinto91@gmail.com
