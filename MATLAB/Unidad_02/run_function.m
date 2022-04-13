@@ -1,3 +1,4 @@
+#!/usr/bin/octave
 clc
 clear all
 close all

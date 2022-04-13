@@ -2,22 +2,21 @@ import numpy as np
 
 """ METODOS NUMERICOS PARA ALGEBRA LINEAL """
 
-""" Algoritmo de sustitucion hacia atras:
+""" 
+    Algoritmo de sustitucion hacia atras:
     Se resuelve hasta un multisistema lineal 
     m sistemas de ecuaciones lineales con cada una n ecuaciones
     de n incognitas cada una.
-"""
+    """
 
 def SustiticionAtras(A):
     
     """ Se resuelve el sistema lineal
-    
     UX = b
     U: matriz triangulada superior
-    b: matriz de estimulos
-    
-"""
+    b: matriz de estimulos        
 
+    """
     # Dimensiones de la matriz aumentada
     N = np.shape(A)
     
@@ -26,7 +25,25 @@ def SustiticionAtras(A):
         A[k,N[0]:(N[1]-1)] = (A[k,N[0]:(N[1]-1)]
         -np.matmul(A[k,(k+1):(N[0]-1)],A[(k+1):(N[0]-1),N[0]:(N[1]-1)]))/A[k,k]
 
-    return A[:,N[0]:(N[1]-1)]
+    return A[:,0:(N[1]-1)]
+
+def SustiticionAdelante(A):
+    
+    """ Se resuelve el sistema lineal
+    LX = b
+    L: matriz triangulada inferior
+    b: matriz de estimulos        
+
+    """
+    # Dimensiones de la matriz aumentada
+    N = np.shape(A)
+    
+    # Sustitucion hacia atras
+    for k in range(0,N[0]-1):
+        A[k,N[0]:(N[1]-1)] = (A[k,N[0]:(N[1]-1)]
+        -np.matmul(A[k,0:(k-1)],A[0:(k-1),N[0]:(N[1]-1)]))/A[k,k]
+
+    return A[:,0:(N[1]-1)]
 
 
 """ Algoritmo de Gauss con triangulacion hacia abajo:
@@ -106,23 +123,24 @@ def PLU(a):
     
     # Comprobacion de dimensiones adecuadas de las entradas
     if N[0] != N[1]:
-        print("a no es una matriz cuadra")    
-    
-    # Matriz aumentada
-    A = np.copy(a)        
-    
+        print("a no es una matriz cuadra")
+    else:
+        # Matriz aumentada
+        P = np.arange(0,N[0])[:, np.newaxis]
+        A = np.block([a, P])        
+        
     # Calculo del maximo absoluto por filas de la matriz aumentada
-    a_max = np.max(np.abs(A[:,0:(N[0]-1)]),1)
+    a_max = np.max(np.abs(A[:,0:N[0]]),1)
     
     # Numero de filas de la matriz aumentada
     f = N[0]
 
     for k in range(0,f-1):
         
-        p = np.argmax(np.abs(A[k:(f-1),k])/a_max[k:(f-1)])+k
+        p = np.argmax(np.abs(A[k:f,k])/a_max[k:f])+k
         
         if p != k:
-            A[[k, p],0:(f-1)] = A[[p, k],0:(f-1)]
+            A[[k, p],0:f] = A[[p, k],0:f]
             
         # Triangulacion
         for j in range(k+1,f):
@@ -131,4 +149,10 @@ def PLU(a):
                 A[j,(k+1):(f-1)] = A[j,(k+1):(f-1)]-d*A[k,(k+1):(f-1)]
                 A[j,k] = d
 
-    return A
+    #print(np.shape(A),f)
+    U = np.triu(A[:,0:f])
+    print(A[:,0:f])
+    #L = np.eye(f)+np.tril(A[:,0:(f-1)],k=-1)
+    #P = A[:,f]
+    
+    return U
