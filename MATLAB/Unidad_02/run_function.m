@@ -4,7 +4,7 @@ clear all
 close all
 
 % Datos
-n = 1024;
+n = 256;
 a = rand(n,n);
 b = eye(n);
 
