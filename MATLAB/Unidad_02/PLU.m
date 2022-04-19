@@ -1,4 +1,5 @@
-function B = PLU(a)
+function A = PLU(a)
+%  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  % 
 % FUNCION QUE IMPLEMENTA LA FACTORIZACION PLU
 % MEDIANTE LAS ELIMINACIONES GAUSSIANAS 
 % CON INTERCAMBIO DE FILAS SIGUIENDO 
@@ -7,6 +8,13 @@ function B = PLU(a)
 % Considere el sistema aX=b
 % a: matriz de coeficientes, matriz cuadrada invertible
 % esta matriz tiene una columna
+% 
+% Se utilizan las funciones:
+% 
+% - SustitucionAdelante.m
+% - SustitucionAtras.m
+%
+%  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  %
 
   % COMPROBACION DE LAS DIMENSIONES
   [f_a,c_a] = size(a);
@@ -16,15 +24,14 @@ function B = PLU(a)
     % ERROR DEBIDO A MAL TAMAÑO DE LA MATRIZ
     % DE COEFICIENTES a
     error("LAS MATRICES NO SON CUADRADAS")
-  
+    
   else 
-
     % NUMERO DE FILAS EN n
     n = f_a;
-  
+    
     % CREAR MATRIZ AUMENTADA
-    A = [a (1:n).' max(abs(a(:,:)),[],2)];
-
+    A = [a (1:n).' max(abs(a),[],2)];
+    
   end  
 
   for k = 1:(n-1)
@@ -50,22 +57,20 @@ function B = PLU(a)
     % PROCESO DE TRIANGULACION
     
     for j = (k+1):n
-    
+      
       if A(j,k) ~= 0
         
-       c = A(j,k)/A(k,k);
-       A(j,1:n) = A(j,1:n)-c*A(k,1:n);
-       A(j,k) = c;
+       v = A(j,k)/A(k,k);
+       A(j,k) = v;
+       A(j,(k+1):n) = A(j,(k+1):n)-v*A(k,(k+1):n);
        
       end 
-    
+      
     end  
     
   end
-  
-  B = A(:,1:(n+1));
 
 end
 
-% Pedro Antonio Peralta Regalado
+% Lic. Pedro Antonio Peralta Regalado.
 % pedrinto91@gmail.com

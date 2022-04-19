@@ -1,13 +1,19 @@
-function dA = determinante(a)
-
-  %  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  %
-  % FUNCIÓN PARA CALCULAR EL DETERMINANTE
-  % 
-  % a: es la matriz con determinante por calcular
-  %
-  %  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  %
+function A = PLU_v2(a)  
   
-    % COMPROBACION DE LAS DIMENSIONES
+  %  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  %
+  % FUNCION QUE IMPLEMENTA LAS ELIMINACIONES GAUSSIANAS 
+  % CON INTERCAMBIO DE FILAS SIGUIENDO 
+  % EL ESQUEMA PIVOTEO PARCIAL Y ESCALAMIENTO
+  %
+  % Considere el sistema multilineal:
+  % aX=b
+  % 
+  % a: matriz de coeficientes, matriz cuadrada invertible
+  % b: matriz de estimulos, por cada sistema de ecuaciones
+  % esta matriz tiene una columna
+  %  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  %
+
+  % COMPROBACION DE LAS DIMENSIONES
   [f_a,c_a] = size(a);
   
   if f_a ~= c_a
@@ -15,14 +21,14 @@ function dA = determinante(a)
     % ERROR DEBIDO A MAL TAMAÑO DE LA MATRIZ
     % DE COEFICIENTES a
     error("LAS MATRICES NO SON CUADRADAS")
-  
+    
   else 
-
+   
     % NUMERO DE FILAS EN n
     n = f_a;
-    q = 1;
+    
     % CREAR MATRIZ AUMENTADA
-    A = [a (1:n).' max(abs(a(:,:)),[],2)];
+    A = [a (1:n).' max(abs(a),[],2)];
     
   end  
 
@@ -43,27 +49,17 @@ function dA = determinante(a)
     if (p ~= k)
       
       A([p k],:) = A([k p],:);
-      q = -q;
       
     end  
    
     % PROCESO DE TRIANGULACION
+    ind1 = [false(k,1); A((k+1):n,k) ~= 0];
+    A(ind1,k) = A(ind1,k)/A(k,k);
+    A(ind1,(k+1):n) = A(ind1,(k+1):n)-A(ind1,k)*A(k,(k+1):n);
     
-    for j = (k+1):n
-    
-      if A(j,k) ~= 0
-        
-       v = A(j,k)/A(k,k);
-       A(j,k:n) = A(j,k:n)-v*A(k,k:n);
-       
-      end 
-    
-    end  
-    
-  end
-  
-  % CALCULO DEL DETERMINANTE 
-  % POR MULTIPLICACIÓN DE LA DIAGONAL
-  dA = q*prod(diag(A));
+  end 
 
 end
+
+% Lic. Pedro Antonio Peralta Regalado
+% pedrinto91@gmail.com

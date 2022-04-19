@@ -1,12 +1,19 @@
-function X = gauss_eliminacion(a,b)
-% FUNCION QUE IMPLEMENTA LAS ELIMINACIONES GAUSSIANAS 
-% CON INTERCAMBIO DE FILAS SIGUIENDO 
-% EL ESQUEMA PIVOTEO PARCIAL Y ESCALAMIENTO
-%
-% Considere el sistema aX=b
-% a: matriz de coeficientes, matriz cuadrada invertible
-% b: matriz de estimulos, por cada sistema de ecuaciones
-% esta matriz tiene una columna
+function X = gauss_eliminacion(a,b)  
+  
+  %=  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  %
+  %
+  % FUNCION QUE IMPLEMENTA LAS ELIMINACIONES GAUSSIANAS 
+  % CON INTERCAMBIO DE FILAS SIGUIENDO 
+  % EL ESQUEMA PIVOTEO PARCIAL Y ESCALAMIENTO
+  %
+  % Considere el sistema multilineal:
+  % aX=b
+  % 
+  % a: matriz de coeficientes, matriz cuadrada invertible
+  % b: matriz de estimulos, por cada sistema de ecuaciones
+  % esta matriz tiene una columna
+  %
+  %=  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  %
 
   % COMPROBACION DE LAS DIMENSIONES
   [f_a,c_a] = size(a);
@@ -76,17 +83,9 @@ function X = gauss_eliminacion(a,b)
     
   end
 
-  % PLANTEAR LA UNICIDAD
-  r = diag(A);
-  if sum(abs(r) < eps) ~= 0
-    
-    error("No hay unicidad en la solucion")
-    
-  end  
-
   X = SustitucionAtras(A);
 
 end
 
-% Pedro Antonio Peralta Regalado
+% Lic. Pedro Antonio Peralta Regalado
 % pedrinto91@gmail.com

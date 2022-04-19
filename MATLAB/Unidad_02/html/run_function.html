@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>run_function</title>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: { inlineMath: [['$','$'], ['\\(','\\)']] },
+  TeX: { equationNumbers: { autoNumber: 'all' } }
+});
+</script>
+<script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+<style>
+body > * {
+  max-width: 42em;
+}
+body {
+  font-family: "Roboto Condensed", sans-serif;
+  padding-left: 7.5em;
+  padding-right: 7.5em;
+}
+pre, code {
+  max-width: 50em;
+  font-family: monospace;
+}
+pre.oct-code {
+  border: 1px solid Grey;
+  padding: 5px;
+}
+pre.oct-code-output {
+  margin-left: 2em;
+}
+span.comment {
+  color: ForestGreen;
+}
+span.keyword {
+  color: Blue;
+}
+span.string {
+  color: DarkOrchid;
+}
+footer {
+  margin-top: 2em;
+  font-size: 80%;
+}
+a, a:visited {
+  color: Blue;
+}
+h2 {
+  font-family: "Roboto Condensed", serif;
+  margin-top: 1.5em;
+}
+h2 a, h2 a:visited {
+  color: Black;
+}
+</style>
+
+</head>
+<body>
+<h1>run_function</h1>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#node1">Ejemplo de solución de un sistema de ecuaciones</a></li>
+<li><a href="#node2">Usando PLU vectorizado</a></li>
+<li><a href="#node3">Usando Eliminaciones Gaussianas</a></li>
+<li><a href="#node4">Funciones utilizadas</a></li>
+</ul>
+
+<pre class="oct-code"><span class="comment">% Ejemplos de uso de:</span>
+<span class="comment">% - gauss_eliminacion.m</span>
+<span class="comment">% - gauss_eliminacion_v2.m</span>
+<span class="comment">% - PLU.m</span>
+<span class="comment">% - PLU_v2.m</span>
+<span class="comment">% Comparación inversa</span>
+<span class="comment">% GAUSS vs PLU</span>
+</pre>
+<h2><a id="node1">Ejemplo de solución de un sistema de ecuaciones</a></h2>
+<p>Las siguientes instrucciones crean las matrices</p>
+
+<pre class="oct-code"><span class="comment">% RESET</span>
+
+clc
+clear all
+close all
+
+<span class="comment">% Datos de entrada</span>
+<span class="comment">% n: dimensión del sistema</span>
+<span class="comment">% a: matriz que contiene los coeficientes del lado</span>
+<span class="comment">% izquierdo del sistema</span>
+<span class="comment">% b: matriz que contiene los coeficientes del lado</span>
+<span class="comment">% derecho del sistema</span>
+
+n = 256;
+a = rand(n,n);
+b = eye(n);</pre>
+<h2><a id="node2">Usando PLU vectorizado</a></h2>
+<ul>
+<li>LLamando la función
+con los datos ingresados se ejecutan
+las siguientes instrucciones
+Las siguientes instrucciones muestran como
+llamar PLU_v2.m y solve_PLU.m</li>
+</ul>
+
+<pre class="oct-code"><span class="comment">% t_ini: captura de tiempo inicial</span>
+<span class="comment">% t_fin: captura de tiempo final</span>
+<span class="comment">% A: Matriz Factorizada</span>
+<span class="comment">%   Se guarda la factorización mediante</span>
+<span class="comment">%   A = [u11, u12, ..., u1n; l21, u22, ..., u2n;</span>
+<span class="comment">%   ...; ln1, ln2, ..., unn]</span>
+<span class="comment">% tplu: Calculando del delta de tiempo</span>
+
+t_ini = time();
+A = PLU_v2(a);
+y = solve_PLU(A,b);
+t_fin = time();
+tplu = t_fin-t_ini;
+fprintf(<span class="string">"Tiempo de computación PLU %f \n"</span>,tplu)</pre>
+
+<pre class="oct-code-output">Tiempo de computación PLU 0.179252 
+</pre>
+<h2><a id="node3">Usando Eliminaciones Gaussianas</a></h2>
+<ul>
+<li>LLamando la función
+con los datos ingresados se ejecutan
+las siguientes instrucciones
+Las siguientes instrucciones muestran como
+llamar gauss_eliminacion_v2.m</li>
+</ul>
+
+<pre class="oct-code"><span class="comment">% t_ini: captura de tiempo inicial</span>
+<span class="comment">% t_fin: captura de tiempo final</span>
+<span class="comment">% tplu: Calculando del delta de tiempo</span>
+
+t_ini = time();
+y = gauss_eliminacion_v2(a,b);
+t_fin = time();
+tgauss2 = t_fin-t_ini;
+fprintf(<span class="string">"Tiempo de computación Gauss 2 %f \n"</span>,tgauss2)</pre>
+
+<pre class="oct-code-output">Tiempo de computación Gauss 2 0.315332 
+</pre>
+<h2><a id="node4">Funciones utilizadas</a></h2>
+<pre class="pre-code"><span class="keyword">function</span> A = PLU_v2(a)  
+  
+  <span class="comment">%  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  %</span>
+  <span class="comment">% FUNCION QUE IMPLEMENTA LAS ELIMINACIONES GAUSSIANAS </span>
+  <span class="comment">% CON INTERCAMBIO DE FILAS SIGUIENDO </span>
+  <span class="comment">% EL ESQUEMA PIVOTEO PARCIAL Y ESCALAMIENTO</span>
+  <span class="comment">%</span>
+  <span class="comment">% Considere el sistema multilineal:</span>
+  <span class="comment">% aX=b</span>
+  <span class="comment">% </span>
+  <span class="comment">% a: matriz de coeficientes, matriz cuadrada invertible</span>
+  <span class="comment">% b: matriz de estimulos, por cada sistema de ecuaciones</span>
+  <span class="comment">% esta matriz tiene una columna</span>
+  <span class="comment">%  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  %</span>
+
+  <span class="comment">% COMPROBACION DE LAS DIMENSIONES</span>
+  [f_a,c_a] = size(a);
+  
+  <span class="keyword">if</span> f_a ~= c_a
+    
+    <span class="comment">% ERROR DEBIDO A MAL TAMAÑO DE LA MATRIZ</span>
+    <span class="comment">% DE COEFICIENTES a</span>
+    error(<span class="string">"LAS MATRICES NO SON CUADRADAS"</span>)
+    
+  <span class="keyword">else</span> 
+   
+    <span class="comment">% NUMERO DE FILAS EN n</span>
+    n = f_a;
+    
+    <span class="comment">% CREAR MATRIZ AUMENTADA</span>
+    A = [a (1:n).<span class="string">' max(abs(a),[],2)];</span>
+    
+  <span class="keyword">end</span>  
+
+  <span class="keyword">for</span> k = 1:(n-1)
+    
+    <span class="comment">% CALCULO DEL MAXIMO Y SU POSICION</span>
+    [v,p] = max(abs(A(k:n,k))./A(k:n,n+2));
+    p = p+k-1;
+    
+    <span class="keyword">if</span> (v &lt; eps)
+      
+      error(<span class="string">"Matriz Singular"</span>)
+      
+    <span class="keyword">end</span>  
+    
+    <span class="comment">% EN CASO DE QUE p NO COINCIDA CON k </span>
+    <span class="comment">% PERMUTE LAS FILAS</span>
+    <span class="keyword">if</span> (p ~= k)
+      
+      A([p k],:) = A([k p],:);
+      
+    <span class="keyword">end</span>  
+   
+    <span class="comment">% PROCESO DE TRIANGULACION</span>
+    ind1 = [false(k,1); A((k+1):n,k) ~= 0];
+    A(ind1,k) = A(ind1,k)/A(k,k);
+    A(ind1,(k+1):n) = A(ind1,(k+1):n)-A(ind1,k)*A(k,(k+1):n);
+    
+  <span class="keyword">end</span> 
+
+<span class="keyword">end</span>
+
+<span class="comment">% Lic. Pedro Antonio Peralta Regalado</span>
+<span class="comment">% pedrinto91@gmail.com</span>
+</pre>
+
+<pre class="pre-code"><span class="keyword">function</span> X = solve_PLU(A,b)
+<span class="comment">%  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  %</span>
+<span class="comment">% SOLUCION DE UN SISTEMA DE ECUACIONES LINEALES</span>
+<span class="comment">% UTILIZANDO FACTORIZACION PLU</span>
+<span class="comment">%</span>
+<span class="comment">% A: Matriz de coeficientes factorizada obtenida de PLU.m</span>
+<span class="comment">% b: Matriz de estimulos, por cada sistema hay una columna</span>
+<span class="comment">%</span>
+<span class="comment">%  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  %</span>
+
+  n = length(A(:,1));
+  Z = SustitucionAdelante([tril(A(:,1:n),-1)+eye(n) b(A(:,n+1),:)],1);
+  X = SustitucionAtras([triu(A(:,1:n)) Z]);
+  
+<span class="keyword">end</span></pre>
+
+<pre class="pre-code"><span class="keyword">function</span> X = gauss_eliminacion_v2(a,b)  
+  
+  <span class="comment">%  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  %</span>
+  <span class="comment">% FUNCION QUE IMPLEMENTA LAS ELIMINACIONES GAUSSIANAS </span>
+  <span class="comment">% CON INTERCAMBIO DE FILAS SIGUIENDO </span>
+  <span class="comment">% EL ESQUEMA PIVOTEO PARCIAL Y ESCALAMIENTO</span>
+  <span class="comment">%</span>
+  <span class="comment">% Considere el sistema multilineal:</span>
+  <span class="comment">% aX=b</span>
+  <span class="comment">% </span>
+  <span class="comment">% a: matriz de coeficientes, matriz cuadrada invertible</span>
+  <span class="comment">% b: matriz de estimulos, por cada sistema de ecuaciones</span>
+  <span class="comment">% esta matriz tiene una columna</span>
+  <span class="comment">%  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  %</span>
+
+  <span class="comment">% COMPROBACION DE LAS DIMENSIONES</span>
+  [f_a,c_a] = size(a);
+  [f_b,c_b] = size(b);
+  
+  <span class="keyword">if</span> f_a ~= c_a
+    
+    <span class="comment">% ERROR DEBIDO A MAL TAMAÑO DE LA MATRIZ</span>
+    <span class="comment">% DE COEFICIENTES a</span>
+    error(<span class="string">"LAS MATRICES NO SON CUADRADAS"</span>)
+  
+  <span class="keyword">elseif</span> c_a ~= f_b
+    
+    <span class="comment">% ERROR DEBIDO A MAL TAMAÑO DE LA MATRIZ</span>
+    <span class="comment">% DE ESTIMULOS b</span>
+    error(<span class="string">"LAS MATRICES NO TIENEN TAMAÑOS COMPATIBLES"</span>)
+    
+  <span class="keyword">else</span> 
+    
+   <span class="comment">% CREAR MATRIZ AUMENTADA</span>
+    A = [a b];
+    
+    <span class="comment">% NUMERO DE FILAS EN n</span>
+    n = f_a;
+    
+    <span class="comment">% NUMERO DE COLUMNAS EN m</span>
+    m = n+c_b;
+    
+    <span class="comment">% MAXIMO POR FILAS</span>
+    a_max = max(abs(A(:,1:n)),[],2);
+    
+  <span class="keyword">end</span>  
+
+  <span class="keyword">for</span> k = 1:(n-1)
+    
+    <span class="comment">% CALCULO DEL MAXIMO Y SU POSICION</span>
+    [v,p] = max(abs(A(k:n,k))./a_max(k:n,1));
+    p = p+k-1;
+    
+    <span class="keyword">if</span> (v &lt; eps)
+      
+      error(<span class="string">"Matriz Singular"</span>)
+      
+    <span class="keyword">end</span>  
+    
+    <span class="comment">% EN CASO DE QUE p NO COINCIDA CON k </span>
+    <span class="comment">% PERMUTE LAS FILAS</span>
+    <span class="keyword">if</span> (p ~= k)
+      
+      A([p k],k:m) = A([k p],k:m);
+      a_max([p k],1) = a_max([k p],1);
+      
+    <span class="keyword">end</span>  
+   
+    <span class="comment">% PROCESO DE TRIANGULACION</span>
+    ind1 = [false(k,1); A((k+1):n,k) ~= 0];
+    A(ind1,k:m) = A(ind1,k:m)-(A(ind1,k)/A(k,k))*A(k,k:m);
+    
+  <span class="keyword">end</span> 
+
+  
+  X = SustitucionAtras(A);
+
+<span class="keyword">end</span>
+
+<span class="comment">% Lic. Pedro Antonio Peralta Regalado</span>
+<span class="comment">% pedrinto91@gmail.com</span>
+</pre>
+
+<pre class="oct-code"><span class="comment">% RESUMEN</span>
+
+fprintf(<span class="string">"%10s \n"</span>,<span class="string">"-_-_-_-_-_-_-_-_-_-"</span>)
+fprintf(<span class="string">"| Metodo | Tiempo |\n"</span>)
+fprintf(<span class="string">"| PLU:   |%8.4f|\n"</span>,tplu)
+fprintf(<span class="string">"| GAUSS: |%8.4f|\n"</span>,tgauss2)</pre>
+
+<pre class="oct-code-output">-_-_-_-_-_-_-_-_-_- 
+| Metodo | Tiempo |
+| PLU:   |  0.1793|
+| GAUSS: |  0.3153|
+</pre>
+
+<footer>
+<hr>
+<a href="https://www.octave.org">Published with GNU Octave 5.2.0</a>
+</footer>
+<!--
+##### SOURCE BEGIN #####
+% Ejemplos de uso de:
+% - gauss_eliminacion.m
+% - gauss_eliminacion_v2.m
+% - PLU.m
+% - PLU_v2.m
+% Comparación inversa
+% GAUSS vs PLU
+
+%% Ejemplo de solución de un sistema de ecuaciones
+% Las siguientes instrucciones crean las matrices
+
+% RESET
+
+clc
+clear all
+close all
+
+% Datos de entrada
+% n: dimensión del sistema
+% a: matriz que contiene los coeficientes del lado
+% izquierdo del sistema
+% b: matriz que contiene los coeficientes del lado
+% derecho del sistema
+
+n = 256;
+a = rand(n,n);
+b = eye(n);
+
+%%
+
+%% Usando PLU vectorizado
+% * LLamando la función
+% con los datos ingresados se ejecutan
+% las siguientes instrucciones
+% Las siguientes instrucciones muestran como
+% llamar PLU_v2.m y solve_PLU.m
+
+% t_ini: captura de tiempo inicial
+% t_fin: captura de tiempo final
+% A: Matriz Factorizada
+%   Se guarda la factorización mediante
+%   A = [u11, u12, ..., u1n; l21, u22, ..., u2n;
+%   ...; ln1, ln2, ..., unn]
+% tplu: Calculando del delta de tiempo
+
+t_ini = time();
+A = PLU_v2(a);
+y = solve_PLU(A,b);
+t_fin = time();
+tplu = t_fin-t_ini;
+fprintf("Tiempo de computación PLU %f \n",tplu)
+
+%%
+
+%% Usando Eliminaciones Gaussianas
+% * LLamando la función
+% con los datos ingresados se ejecutan
+% las siguientes instrucciones
+% Las siguientes instrucciones muestran como
+% llamar gauss_eliminacion_v2.m
+
+% t_ini: captura de tiempo inicial
+% t_fin: captura de tiempo final
+% tplu: Calculando del delta de tiempo
+
+t_ini = time();
+y = gauss_eliminacion_v2(a,b);
+t_fin = time();
+tgauss2 = t_fin-t_ini;
+fprintf("Tiempo de computación Gauss 2 %f \n",tgauss2)
+
+%%
+
+%% Funciones utilizadas
+##
+#
+# <include>PLU_v2.m</include>
+#
+# <include>solve_PLU.m</include>
+#
+# <include>gauss_eliminacion_v2.m</include>
+#
+
+% RESUMEN
+
+fprintf("%10s \n","-_-_-_-_-_-_-_-_-_-")
+fprintf("| Metodo | Tiempo |\n")
+fprintf("| PLU:   |%8.4f|\n",tplu)
+fprintf("| GAUSS: |%8.4f|\n",tgauss2)
+##### SOURCE END #####
+-->
+</body>
+</html>
