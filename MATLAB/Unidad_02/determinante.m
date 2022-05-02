@@ -7,7 +7,7 @@ function dA = determinante(a)
   %
   %  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  =  %
   
-    % COMPROBACION DE LAS DIMENSIONES
+  % COMPROBACION DE LAS DIMENSIONES
   [f_a,c_a] = size(a);
   
   if f_a ~= c_a
