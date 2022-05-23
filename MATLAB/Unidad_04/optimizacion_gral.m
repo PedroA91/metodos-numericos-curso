@@ -5,7 +5,7 @@ close all
 % Entradas ...
 X = linspace(1,10,2560);
 Y = 4*X.^2+16*sin(X)-8./X+12*randn([1,2560]);
-m = 4;
+m = 2;
 
 % Calculo de momentos
 mo = zeros(1,2*m+1);
