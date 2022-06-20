@@ -1,0 +1,9 @@
+Elemento,np,nn,Parametros,,,
+V1,1,4,senoidal,12,200,0
+G1,1,2,const,0.05,1,
+L1,2,4,const,0.0005,1,
+C1,2,4,const,0.001,2,
+V2,2,3,cosenoidal,12,200,0
+R1,3,4,const,50,0,50
+gnd,4,,,,,
+sim,time,0.25,dt,tol,1E-09,

@@ -3,15 +3,15 @@ clear all
 close all
 
 % Datos ...
-x = linspace(0,2,64);
+x = linspace(0,2,16);
 y = sin(2*pi*x);
-N = 256;
+N = 512;
 
 [X,Y] = spline_cub(x,y,N);
 
 figure(1)
-plot(X,Y,"-xr","LineWidth",2,...
-x,y,"-xk","LineWidth",2)
+plot(X,Y,"-r","LineWidth",2,...
+x,y,"-ok","LineWidth",4)
 grid on
 title("Ejemplo Splines","FontSize",16)
 xlabel("Coordenada X","FontSize",12)
