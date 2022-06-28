@@ -25,6 +25,10 @@ function [n_nodos,n_E,gl] = calculaNumeros(Dato)
 			
 			gl = gl+1;
 			
+		elseif S.Elemento{k,1}(1,1) == 'S'
+			
+			gl = gl+1;
+			
 		end
 		
 	end

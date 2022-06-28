@@ -39,7 +39,7 @@ l = abs(eig(g,dg));
 L = max(abs(l(!isinf(l))));
 d = 1./L;
 dt = 0.025*min(d,dt);
-t_final = 20e-3;
+t_final = 50e-3;
 t = 0:dt:t_final;
 nt = length(t);
 V = zeros(gl,1);
@@ -56,5 +56,5 @@ for j = 1:(nt-1)
 end
 
 figure(1)
-plot(t,v(1:(n_nodos-1),:),"LineWidth",2)
+plot(t,v(1:(n_nodos-1),:),"-k","LineWidth",2)
 grid on
